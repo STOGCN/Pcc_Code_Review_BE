@@ -21,15 +21,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private CookieUtil cookieUtil;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService,
-                       RefreshTokenService refreshTokenService) {
+                       RefreshTokenService refreshTokenService,
+                       CookieUtil cookieUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.cookieUtil = cookieUtil;
     }
 
     @Transactional
@@ -72,7 +75,7 @@ public class UserService {
         refreshTokenService.save(user.getUsername(), refreshToken);
 
         // สร้าง Cookie สำหรับ Refresh Token
-        response.addHeader("Set-Cookie", CookieUtil.createRefreshTokenCookie(refreshToken).toString());
+        response.addHeader("Set-Cookie", cookieUtil.createRefreshTokenCookie(refreshToken).toString());
 
         // สร้าง Response DTO
         LoginResponseDTO loginResponse = new LoginResponseDTO();

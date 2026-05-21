@@ -1,6 +1,7 @@
 
 package pccth.code.review.Backend.Config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,61 +20,64 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-        private final JwtAuthFilter jwtAuthFilter;
-        private final WebhookAuthFilter webhookAuthFilter;
+    @Value("${cors.allowed-origins}")
+    private List<String> allowedOrigins;
 
-        public SecurityConfig(JwtAuthFilter jwtAuthFilter, WebhookAuthFilter webhookAuthFilter) {
-                this.jwtAuthFilter = jwtAuthFilter;
-                this.webhookAuthFilter = webhookAuthFilter;
-        }
+    private final JwtAuthFilter jwtAuthFilter;
+    private final WebhookAuthFilter webhookAuthFilter;
 
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-                http
-                                .csrf(csrf -> csrf.disable())
-                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                                .requestMatchers(
-                                                                "/",
-                                                                "/swagger-ui/**",
-                                                                "/v3/api-docs/**",
-                                                                "/swagger-ui.html",
-                                                                "/user/login",
-                                                                "/user/register",
-                                                                "/user/refresh",
-                                                                "/user/logout",
-                                                                "/webhooks/**",
-                                                                "/ws",
-                                                                "/api/email",
-                                                                "/user/forgot-password",
-                                                                "/api/email-verification/**",
-                                                                "/user/reset-password",
-                                                                "/ws/**",
-                                                                "/error")
-                                                .permitAll()
-                                                .anyRequest().authenticated())
-                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                                .addFilterBefore(webhookAuthFilter, JwtAuthFilter.class);
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, WebhookAuthFilter webhookAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.webhookAuthFilter = webhookAuthFilter;
+    }
 
-                return http.build();
-        }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/user/login",
+                                "/user/register",
+                                "/user/refresh",
+                                "/user/logout",
+                                "/webhooks/**",
+                                "/ws",
+                                "/api/email",
+                                "/user/forgot-password",
+                                "/api/email-verification/**",
+                                "/user/reset-password",
+                                "/ws/**",
+                                "/error")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(webhookAuthFilter, JwtAuthFilter.class);
 
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration config = new CorsConfiguration();
+        return http.build();
+    }
 
-                config.setAllowedOrigins(List.of("http://localhost:4200"));
-                config.setAllowedMethods(List.of(
-                                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-                config.setAllowedHeaders(List.of("*"));
-                config.setAllowCredentials(true);
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", config);
+        config.setAllowedOrigins(allowedOrigins);
+        config.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
 
-                return source;
-        }
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 
 }

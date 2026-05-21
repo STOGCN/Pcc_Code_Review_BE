@@ -20,10 +20,12 @@ public class UserController {
 
     private final AuthService authService;
     private final UserService userService;
+    private CookieUtil cookieUtil;
 
-    public UserController(AuthService authService, UserService userService) {
+    public UserController(AuthService authService, UserService userService,CookieUtil cookieUtil) {
         this.authService = authService;
         this.userService = userService;
+        this.cookieUtil = cookieUtil;
     }
 
     @PostMapping("/register")
@@ -56,7 +58,7 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@CookieValue(name = "refresh_token", required = false) String refreshToken, HttpServletResponse response) {
         authService.logout(refreshToken);
-        response.addHeader("Set-Cookie", CookieUtil.clearRefreshTokenCookie().toString());
+        response.addHeader("Set-Cookie", cookieUtil.clearRefreshTokenCookie().toString());
         return ResponseEntity.ok("Logged out successfully");
     }
 
