@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import pccth.code.review.Backend.DTO.Response.*;
 import pccth.code.review.Backend.DTO.ScanWsEvent;
 import pccth.code.review.Backend.Entity.IssueEntity;
@@ -183,6 +186,7 @@ public class ScanService {
         }
     }
 
+    @Transactional
     public ScanResponseDTO updateScan(N8NResponseDTO req) {
 
         ScanEntity scan = scanRepository.findById(req.getScanId())
@@ -227,9 +231,13 @@ public class ScanService {
         dto.setMetrics(updated.getMetrics());
         dto.setLogFilePath(updated.getLogFilePath());
 
-        scanStatusPublisher.publish(
-                new ScanWsEvent(req.getProjectId(), req.getStatus(),req.getScanId())
-        );
+        ScanWsEvent event = new ScanWsEvent(req.getProjectId(), req.getStatus(), req.getScanId());
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                scanStatusPublisher.publish(event);
+            }
+        });
 
         return dto;
     }

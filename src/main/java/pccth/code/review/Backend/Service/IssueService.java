@@ -22,7 +22,6 @@ public class IssueService {
 
     private final IssueRepository issueRepository;
     private final IssueDetailRepository issueDetailRepository;
-    private final ScanIssueRepository scanIssueRepository;
     private final CommentService commentService;
     private final ScanRepository scanRepository;
     private final ProjectRepository projectRepository;
@@ -33,7 +32,6 @@ public class IssueService {
     public IssueService(
             IssueRepository issueRepository,
             IssueDetailRepository issueDetailRepository,
-            ScanIssueRepository scanIssueRepository,
             CommentService commentService,
             ScanRepository scanRepository,
             ProjectRepository projectRepository,
@@ -42,7 +40,6 @@ public class IssueService {
             IssueBroadcastPublisher issueBroadcastPublisher) {
         this.issueRepository = issueRepository;
         this.issueDetailRepository = issueDetailRepository;
-        this.scanIssueRepository = scanIssueRepository;
         this.commentService = commentService;
         this.scanRepository = scanRepository;
         this.projectRepository = projectRepository;
@@ -148,12 +145,15 @@ public class IssueService {
 
             IssueEntity issueRef = entityManager.getReference(IssueEntity.class, issueId);
 
-            if (!scanIssueRepository.existsByScan_IdAndIssue_Id(scanId, issueId)) {
-                ScanIssueEntity link = new ScanIssueEntity();
-                link.setScan(scan);
-                link.setIssue(issueRef);
-                scanIssueRepository.save(link);
-            }
+            entityManager.createNativeQuery("""
+                    INSERT INTO scan_issues (id, scan_id, issue_id)
+                    VALUES (:id, :scanId, :issueId)
+                    ON CONFLICT (scan_id, issue_id) DO NOTHING
+                    """)
+                    .setParameter("id", UUID.randomUUID())
+                    .setParameter("scanId", scanId)
+                    .setParameter("issueId", issueId)
+                    .executeUpdate();
 
             upsertIssueDetail(issueRef, dto);
         }
@@ -168,16 +168,20 @@ public class IssueService {
         if (!hasDetail)
             return;
 
-        IssueDetailEntity detail = issueDetailRepository
-                .findById(issue.getId())
-                .orElseGet(IssueDetailEntity::new);
-
-        detail.setIssue(issue);
-        detail.setDescription(dto.getDescription());
-        detail.setVulnerableCode(dto.getVulnerableCode());
-        detail.setRecommendedFix(dto.getRecommendedFix());
-
-        issueDetailRepository.save(detail);
+        entityManager.createNativeQuery("""
+                INSERT INTO issue_details (issue_id, description, vulnerable_code, recommended_fix)
+                VALUES (:issueId, :description, :vulnerableCode, :recommendedFix)
+                ON CONFLICT (issue_id)
+                DO UPDATE SET
+                    description = EXCLUDED.description,
+                    vulnerable_code = EXCLUDED.vulnerable_code,
+                    recommended_fix = EXCLUDED.recommended_fix
+                """)
+                .setParameter("issueId", issue.getId())
+                .setParameter("description", dto.getDescription())
+                .setParameter("vulnerableCode", dto.getVulnerableCode())
+                .setParameter("recommendedFix", dto.getRecommendedFix())
+                .executeUpdate();
     }
 
     @Transactional
