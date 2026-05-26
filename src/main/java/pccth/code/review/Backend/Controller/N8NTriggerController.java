@@ -42,8 +42,8 @@ public class N8NTriggerController {
 
     }
 
-    @PostMapping("/api/email")
-    public ResponseEntity<Void> sendEmail(@RequestBody EmailRequestDTO dto) {
+    @PostMapping("/api/email/send")
+    public ResponseEntity<Void> sendEmailAuthenticated(@RequestBody EmailRequestDTO dto) {
         emailService.send(dto);
         return ResponseEntity.accepted().build();
     }

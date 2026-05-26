@@ -50,7 +50,6 @@ public class SecurityConfig {
                                 "/user/logout",
                                 "/webhooks/**",
                                 "/ws",
-                                "/api/email",
                                 "/user/forgot-password",
                                 "/api/email-verification/**",
                                 "/user/reset-password",

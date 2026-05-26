@@ -8,6 +8,7 @@ import pccth.code.review.Backend.DTO.Request.*;
 import pccth.code.review.Backend.DTO.Response.*;
 import pccth.code.review.Backend.Entity.UserEntity;
 import pccth.code.review.Backend.Repository.UserRepository;
+import pccth.code.review.Backend.EnumType.EmailType;
 import pccth.code.review.Backend.Util.CookieUtil;
 
 import java.util.ArrayList;
@@ -21,18 +22,21 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
-    private CookieUtil cookieUtil;
+    private final CookieUtil cookieUtil;
+    private final EmailService emailService;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService,
                        RefreshTokenService refreshTokenService,
-                       CookieUtil cookieUtil) {
+                       CookieUtil cookieUtil,
+                       EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
         this.cookieUtil = cookieUtil;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -50,6 +54,17 @@ public class UserService {
         user.setCreateAt(new Date());
 
         userRepository.save(user);
+
+        try {
+            EmailRequestDTO emailReq = new EmailRequestDTO();
+            emailReq.setType(EmailType.Register);
+            emailReq.setEmail(user.getEmail());
+            emailReq.setUsername(user.getUsername());
+            emailService.send(emailReq);
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(UserService.class)
+                    .error("Failed to send welcome email for user: {}", user.getUsername(), e);
+        }
 
         RegisterResponseDTO response = new RegisterResponseDTO();
         response.setMessage("User registered successfully");
