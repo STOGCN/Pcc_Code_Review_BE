@@ -173,7 +173,7 @@ public class SonarScanService {
                     String testCommand = useCoverage
                             ? """
                             echo "=== RUNNING TESTS WITH COVERAGE ==="
-                            npx ng test --no-watch --code-coverage --browsers=ChromeHeadless || true
+                            CHROMIUM_FLAGS="--no-sandbox --disable-gpu" npx ng test --no-watch --code-coverage --browsers=ChromeHeadless || true
                             """
                             : "";
 
