@@ -77,6 +77,9 @@ public class SonarScanService {
                     }
 
                     // ถ้า runTests=true → ใช้ verify (รัน test + generate JaCoCo report)
+                    String mvnGoal = runTests ? "verify" : "compile";
+                    String mvnSkip = runTests ? "" : "-DskipTests";
+
                     String buildCommand = isGradle ? """
                             echo "=== BUILD SPRING BOOT (GRADLE) ==="
                             chmod +x gradlew || true
@@ -87,14 +90,11 @@ public class SonarScanService {
                             echo "=== BUILD SPRING BOOT (MAVEN) ==="
                             if [ -f .mvn/wrapper/maven-wrapper.properties ]; then
                               chmod +x mvnw
-                              ./mvnw -B %s -DskipTests
+                              ./mvnw -B %s %s
                             else
-                              mvn -B %s -DskipTests
+                              mvn -B %s %s
                             fi
-                            """.formatted(
-                            runTests ? "verify" : "compile",
-                            runTests ? "verify" : "compile"
-                    );
+                            """.formatted(mvnGoal, mvnSkip, mvnGoal, mvnSkip);
 
                     String binariesPath = isGradle
                             ? workDir + "/build/classes/java/main"
