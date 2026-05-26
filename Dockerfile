@@ -29,6 +29,14 @@ RUN curl -fsSL https://services.gradle.org/distributions/gradle-8.6-bin.zip -o g
  && gradle -v \
  && rm gradle.zip
 
+# ===== install Google Chrome (for Angular test coverage) =====
+RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
+ && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+ && apt-get update \
+ && apt-get install -y google-chrome-stable \
+ && rm -rf /var/lib/apt/lists/*
+ENV CHROME_BIN=/usr/bin/google-chrome-stable
+
 # ===== install sonar-scanner =====
 RUN curl -fL -o sonar.zip \
     https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip \
