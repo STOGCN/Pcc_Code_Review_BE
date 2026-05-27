@@ -6,6 +6,24 @@ public class QualityGateSettingsDTO {
     private Integer maxBugs;              // default 999999
     private Integer maxVulnerabilities;   // default 999999
     private Integer maxCodeSmells;        // default 999999
+    private Integer qgMaxDuplications;
+    private Integer qgMaxSecurityHotspots;
+
+    public Integer getQgMaxDuplications() {
+        return qgMaxDuplications;
+    }
+
+    public void setQgMaxDuplications(Integer qgMaxDuplications) {
+        this.qgMaxDuplications = qgMaxDuplications;
+    }
+
+    public Integer getQgMaxSecurityHotspots() {
+        return qgMaxSecurityHotspots;
+    }
+
+    public void setQgMaxSecurityHotspots(Integer qgMaxSecurityHotspots) {
+        this.qgMaxSecurityHotspots = qgMaxSecurityHotspots;
+    }
 
     public Boolean getFailOnError() { return failOnError; }
     public void setFailOnError(Boolean failOnError) { this.failOnError = failOnError; }
