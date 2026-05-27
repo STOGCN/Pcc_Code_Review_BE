@@ -31,6 +31,7 @@ CREATE TABLE sonarqube_config (
     server_url VARCHAR(500),
     auth_token VARCHAR(500),
     organization VARCHAR(255),
+    git_access_token VARCHAR(255),
     -- Angular Settings
     angular_run_npm BOOLEAN DEFAULT false,
     angular_coverage BOOLEAN DEFAULT false,
@@ -47,6 +48,8 @@ CREATE TABLE sonarqube_config (
     qg_max_bugs INTEGER DEFAULT 0,
     qg_max_vulnerabilities INTEGER DEFAULT 0,
     qg_max_code_smells INTEGER DEFAULT 0,
+    qg_max_duplications INTEGER DEFAULT 0,
+    qg_max_security_hotspots INTEGER DEFAULT 0,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

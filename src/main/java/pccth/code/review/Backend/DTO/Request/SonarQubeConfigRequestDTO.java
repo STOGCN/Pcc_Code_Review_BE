@@ -6,6 +6,7 @@ public class SonarQubeConfigRequestDTO {
     private String serverUrl;
     private String authToken;
     private String organization;
+    private String gitAccessToken;
 
     // Angular Settings
     private Boolean angularRunNpm;
@@ -25,6 +26,8 @@ public class SonarQubeConfigRequestDTO {
     private Integer qgMaxBugs;
     private Integer qgMaxVulnerabilities;
     private Integer qgMaxCodeSmells;
+    private Integer qgMaxDuplications;
+    private Integer qgMaxSecurityHotspots;
 
     // User ID getter/setter
     public String getUserId() {
@@ -38,6 +41,30 @@ public class SonarQubeConfigRequestDTO {
     // Getters and Setters
     public String getServerUrl() {
         return serverUrl;
+    }
+
+    public String getGitAccessToken() {
+        return gitAccessToken;
+    }
+
+    public void setGitAccessToken(String gitAccessToken) {
+        this.gitAccessToken = gitAccessToken;
+    }
+
+    public Integer getQgMaxDuplications() {
+        return qgMaxDuplications;
+    }
+
+    public void setQgMaxDuplications(Integer qgMaxDuplications) {
+        this.qgMaxDuplications = qgMaxDuplications;
+    }
+
+    public Integer getQgMaxSecurityHotspots() {
+        return qgMaxSecurityHotspots;
+    }
+
+    public void setQgMaxSecurityHotspots(Integer qgMaxSecurityHotspots) {
+        this.qgMaxSecurityHotspots = qgMaxSecurityHotspots;
     }
 
     public void setServerUrl(String serverUrl) {

@@ -25,6 +25,9 @@ public class SonarQubeConfigEntity {
     @Column(name = "organization", length = 255)
     private String organization;
 
+    @Column(name = "git_access_token", length = 255)
+    private String gitAccessToken;
+
     // Angular Settings
     @Column(name = "angular_run_npm")
     private Boolean angularRunNpm = false;
@@ -67,6 +70,12 @@ public class SonarQubeConfigEntity {
     @Column(name = "qg_max_code_smells")
     private Integer qgMaxCodeSmells = 0;
 
+    @Column(name = "qg_max_duplications")
+    private Integer qgMaxDuplications = 0;
+
+    @Column(name = "qg_max_security_hotspots")
+    private Integer qgMaxSecurityHotspots = 0;
+
     @Column(name = "created_at")
     private Date createdAt;
 
@@ -76,6 +85,30 @@ public class SonarQubeConfigEntity {
     // Getters and Setters
     public UUID getId() {
         return id;
+    }
+
+    public String getGitAccessToken() {
+        return gitAccessToken;
+    }
+
+    public void setGitAccessToken(String gitAccessToken) {
+        this.gitAccessToken = gitAccessToken;
+    }
+
+    public Integer getQgMaxDuplications() {
+        return qgMaxDuplications;
+    }
+
+    public void setQgMaxDuplications(Integer qgMaxDuplications) {
+        this.qgMaxDuplications = qgMaxDuplications;
+    }
+
+    public Integer getQgMaxSecurityHotspots() {
+        return qgMaxSecurityHotspots;
+    }
+
+    public void setQgMaxSecurityHotspots(Integer qgMaxSecurityHotspots) {
+        this.qgMaxSecurityHotspots = qgMaxSecurityHotspots;
     }
 
     public void setId(UUID id) {

@@ -54,6 +54,8 @@ public class SonarQubeConfigService {
         config.setQgMaxBugs(0);
         config.setQgMaxVulnerabilities(0);
         config.setQgMaxCodeSmells(0);
+        config.setQgMaxDuplications(0);
+        config.setQgMaxSecurityHotspots(0);
         config.setCreatedAt(new Date());
         config.setUpdatedAt(new Date());
         SonarQubeConfigEntity saved = sonarQubeConfigRepository.save(config);
@@ -78,6 +80,8 @@ public class SonarQubeConfigService {
             config.setAuthToken(request.getAuthToken());
         if (request.getOrganization() != null)
             config.setOrganization(request.getOrganization());
+        if(request.getGitAccessToken() != null)
+            config.setGitAccessToken(request.getGitAccessToken());
 
         // Angular settings
         if (request.getAngularRunNpm() != null)
@@ -110,6 +114,10 @@ public class SonarQubeConfigService {
             config.setQgMaxVulnerabilities(request.getQgMaxVulnerabilities());
         if (request.getQgMaxCodeSmells() != null)
             config.setQgMaxCodeSmells(request.getQgMaxCodeSmells());
+        if(request.getQgMaxDuplications() != null)
+            config.setQgMaxDuplications(request.getQgMaxDuplications());
+        if(request.getQgMaxSecurityHotspots() != null)
+            config.setQgMaxSecurityHotspots(request.getQgMaxSecurityHotspots());
 
         // Set updatedAt for update
         config.setUpdatedAt(new Date());
@@ -127,6 +135,7 @@ public class SonarQubeConfigService {
         dto.setUserId(entity.getUser().getId());
         dto.setServerUrl(entity.getServerUrl());
         dto.setOrganization(entity.getOrganization());
+        dto.setGitAccessToken(entity.getGitAccessToken());
         dto.setAuthToken(entity.getAuthToken());
 
         dto.setAngularRunNpm(entity.getAngularRunNpm());
@@ -144,6 +153,8 @@ public class SonarQubeConfigService {
         dto.setQgMaxBugs(entity.getQgMaxBugs());
         dto.setQgMaxVulnerabilities(entity.getQgMaxVulnerabilities());
         dto.setQgMaxCodeSmells(entity.getQgMaxCodeSmells());
+        dto.setQgMaxDuplications(entity.getQgMaxDuplications());
+        dto.setQgMaxSecurityHotspots(entity.getQgMaxSecurityHotspots());
 
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
