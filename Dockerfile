@@ -34,8 +34,10 @@ RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor
  && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
  && apt-get update \
  && apt-get install -y google-chrome-stable \
- && rm -rf /var/lib/apt/lists/*
-ENV CHROME_BIN=/usr/bin/google-chrome-stable
+ && rm -rf /var/lib/apt/lists/* \
+ && printf '#!/bin/bash\nexec /usr/bin/google-chrome-stable --no-sandbox --disable-gpu "$@"\n' > /usr/local/bin/chrome-nosandbox \
+ && chmod +x /usr/local/bin/chrome-nosandbox
+ENV CHROME_BIN=/usr/local/bin/chrome-nosandbox
 
 # ===== install sonar-scanner =====
 RUN curl -fL -o sonar.zip \

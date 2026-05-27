@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pccth.code.review.Backend.DTO.Request.*;
 import pccth.code.review.Backend.DTO.Response.*;
@@ -63,18 +64,21 @@ public class UserController {
     }
 
     //เพิ่มใหม่วันที่ 20/1/69
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/new-user")
     public ResponseEntity<RegisterResponseDTO> addUser(@Valid @RequestBody ManageUserRequestDTO manageUser) {
         RegisterResponseDTO response = userService.addUser(manageUser);
         return ResponseEntity.status(201).body(response); // 201 สำหรับการสร้างใหม่
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all-user")
     public List<UserResponseDTO> allUser(){
         return userService.allUser();
     }
 
     // แก้ไข repository เฉพาะตัว id
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/update-user/{id}")
     public ResponseEntity<RegisterResponseDTO> updateRepository(@PathVariable UUID id,
                                                                   @Valid @RequestBody UserRequestsDTO userRequestsDTO) {
@@ -83,6 +87,7 @@ public class UserController {
     }
 
     // ลบ repository เฉพาะตัว id
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete-user/{id}")
     public ResponseEntity<RegisterResponseDTO> deleteUser(@PathVariable UUID id) {
         RegisterResponseDTO response = userService.deleteUser(id);
